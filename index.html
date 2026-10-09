@@ -1,0 +1,397 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101321">
+  <meta name="description"
+        content="Challengers — a progressive-hint word guessing game.">
+  <title>Challengers — Think Fast. Guess Smart.</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="words.js" defer></script>
+  <script src="script.js" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#" id="brandLink"
+         aria-label="Challengers home">
+        <span class="brand-icon" aria-hidden="true">✳</span>
+        CHALLENGERS
+      </a>
+      <button id="soundButton"
+              class="icon-button"
+              type="button"
+              aria-label="Mute sound"
+              aria-pressed="false">♪</button>
+    </header>
+
+    <main id="mainContent">
+      <!-- MENU -->
+      <section id="menuScreen" class="screen active"
+               aria-labelledby="menuTitle">
+        <div class="hero">
+          <span class="eyebrow">
+            ✦ THE DAILY BRAIN WORKOUT
+          </span>
+          <h1 id="menuTitle">
+            THINK FAST.<br>
+            <span class="accent">GUESS SMART.</span>
+          </h1>
+          <p class="hero-description">
+            One hidden word. Three progressive clues.
+            Five chances to prove you know it.
+          </p>
+        </div>
+
+        <div class="panel setup-panel">
+          <div class="section-heading">
+            <span class="step-number">01</span>
+            <h2>Choose your mode</h2>
+          </div>
+
+          <div class="mode-grid" role="group"
+               aria-label="Game mode">
+            <button class="mode-card selected"
+                    type="button"
+                    data-mode="quick"
+                    aria-pressed="true">
+              <span class="mode-symbol">⚡</span>
+              <strong>Quick Play</strong>
+              <small>5 random rounds</small>
+            </button>
+            <button class="mode-card"
+                    type="button"
+                    data-mode="theme"
+                    aria-pressed="false">
+              <span class="mode-symbol">◈</span>
+              <strong>Theme Challenge</strong>
+              <small>Master one topic</small>
+            </button>
+            <button class="mode-card"
+                    type="button"
+                    data-mode="endless"
+                    aria-pressed="false">
+              <span class="mode-symbol">∞</span>
+              <strong>Endless</strong>
+              <small>Keep your run alive</small>
+            </button>
+          </div>
+
+          <div id="themePicker" class="field hidden">
+            <label for="themeSelect">SELECT A THEME</label>
+            <select id="themeSelect"></select>
+          </div>
+
+          <div class="section-heading spaced">
+            <span class="step-number">02</span>
+            <h2>Set the difficulty</h2>
+          </div>
+
+          <div class="difficulty-options"
+               role="group"
+               aria-label="Difficulty">
+            <button type="button"
+                    class="difficulty-button"
+                    data-difficulty="easy"
+                    aria-pressed="false">Easy</button>
+            <button type="button"
+                    class="difficulty-button selected"
+                    data-difficulty="medium"
+                    aria-pressed="true">Medium</button>
+            <button type="button"
+                    class="difficulty-button"
+                    data-difficulty="hard"
+                    aria-pressed="false">Hard</button>
+            <button type="button"
+                    class="difficulty-button"
+                    data-difficulty="mixed"
+                    aria-pressed="false">Mixed</button>
+          </div>
+          <p class="muted helper-text">
+            Difficulty controls the word pool.
+            Mixed includes every level.
+          </p>
+
+          <button id="startButton"
+                  class="primary-button full-width"
+                  type="button">
+            START CHALLENGE <span aria-hidden="true">↗</span>
+          </button>
+          <button id="howToPlayButton"
+                  class="text-button centered"
+                  type="button">
+            How to play <span aria-hidden="true">ⓘ</span>
+          </button>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span>BEST SCORE</span>
+            <strong id="menuBestScore">0</strong>
+          </div>
+          <div class="stat-card">
+            <span>BEST STREAK</span>
+            <strong id="menuBestStreak">0</strong>
+          </div>
+          <div class="stat-card">
+            <span>WORDS SOLVED</span>
+            <strong id="menuTotalSolved">0</strong>
+          </div>
+          <div class="stat-card">
+            <span>GAMES PLAYED</span>
+            <strong id="menuGamesPlayed">0</strong>
+          </div>
+        </div>
+      </section>
+
+      <!-- GAME -->
+      <section id="gameScreen" class="screen"
+               aria-labelledby="gameHeading">
+        <div class="game-header">
+          <div>
+            <span class="eyebrow" id="roundCounter">
+              ROUND 1 / 5
+            </span>
+            <h1 id="gameHeading" class="game-title">
+              Crack the word.
+            </h1>
+          </div>
+          <button id="quitButton"
+                  class="secondary-button small-button"
+                  type="button">Quit</button>
+        </div>
+
+        <div class="game-stats">
+          <div>
+            <span>SCORE</span>
+            <strong id="gameScore">0</strong>
+          </div>
+          <div>
+            <span>STREAK</span>
+            <strong id="gameStreak">0 🔥</strong>
+          </div>
+        </div>
+
+        <div id="gameCard" class="panel game-card">
+          <div class="game-card-top">
+            <span class="theme-badge" id="themeBadge">
+              SCIENCE & NATURE
+            </span>
+            <span class="difficulty-label"
+                  id="roundDifficulty">MEDIUM</span>
+          </div>
+
+          <div class="clue-section">
+            <span class="eyebrow">YOUR CLUES</span>
+            <div id="cluesContainer"
+                 class="clues-container"
+                 aria-live="polite"
+                 aria-relevant="additions"></div>
+          </div>
+
+          <div class="answer-section">
+            <span class="eyebrow">THE HIDDEN WORD</span>
+            <div id="letterSlots"
+                 class="letter-slots"
+                 aria-label="Hidden answer"></div>
+          </div>
+
+          <div class="tries-section">
+            <div class="tries-heading">
+              <span class="eyebrow">ATTEMPTS</span>
+              <span id="triesText">5 remaining</span>
+            </div>
+            <div id="triesPips" class="tries-pips"
+                 role="img"
+                 aria-label="5 attempts remaining"></div>
+          </div>
+
+          <form id="guessForm" novalidate>
+            <label class="input-label" for="guessInput">
+              YOUR GUESS
+            </label>
+            <div class="guess-row">
+              <input id="guessInput"
+                     type="text"
+                     autocomplete="off"
+                     autocapitalize="words"
+                     spellcheck="false"
+                     enterkeyhint="go"
+                     maxlength="100"
+                     placeholder="Type your answer..."
+                     aria-describedby="guessFeedback">
+              <button id="submitButton"
+                      class="primary-button submit-button"
+                      type="submit">GUESS ↗</button>
+            </div>
+            <p id="guessFeedback"
+               class="feedback"
+               role="status"
+               aria-live="polite"></p>
+          </form>
+
+          <div class="guess-history-section">
+            <div class="history-title">
+              <span class="eyebrow">PREVIOUS GUESSES</span>
+              <span id="historyCount">0 / 5</span>
+            </div>
+            <ul id="guessHistory"
+                class="guess-history"></ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ROUND RESULT -->
+      <section id="roundScreen" class="screen"
+               aria-labelledby="roundResultTitle">
+        <div class="result-card panel">
+          <div id="resultIcon"
+               class="result-icon"
+               aria-hidden="true">✦</div>
+          <span class="eyebrow"
+                id="roundResultEyebrow">WORD SOLVED</span>
+          <h1 id="roundResultTitle">Brilliant.</h1>
+          <p class="muted">The answer was</p>
+          <div id="revealedAnswer"
+               class="revealed-answer"></div>
+
+          <div class="points-earned">
+            <strong id="pointsEarned">+100</strong>
+            <span>POINTS EARNED</span>
+          </div>
+
+          <div class="fact-box">
+            <span class="eyebrow">DID YOU KNOW?</span>
+            <p id="roundFact"></p>
+          </div>
+
+          <p id="roundDetail"
+             class="result-detail"></p>
+
+          <button id="nextButton"
+                  class="primary-button full-width"
+                  type="button">NEXT ROUND ↗</button>
+        </div>
+      </section>
+
+      <!-- FINAL RESULTS -->
+      <section id="finalScreen" class="screen"
+               aria-labelledby="finalTitle">
+        <div class="final-header">
+          <span class="eyebrow">CHALLENGE COMPLETE</span>
+          <h1 id="finalTitle">
+            WELL <span class="accent">PLAYED.</span>
+          </h1>
+          <div id="highScoreBanner"
+               class="high-score-banner hidden">
+            ✦ NEW HIGH SCORE ✦
+          </div>
+        </div>
+
+        <div class="panel final-panel">
+          <span class="eyebrow">YOUR FINAL SCORE</span>
+          <div id="finalScore"
+               class="final-score">0</div>
+
+          <div class="final-stats-grid">
+            <div>
+              <span>WORDS SOLVED</span>
+              <strong id="finalSolved">0</strong>
+            </div>
+            <div>
+              <span>AVG. TRIES</span>
+              <strong id="finalAverage">—</strong>
+            </div>
+            <div>
+              <span>BEST STREAK</span>
+              <strong id="finalStreak">0</strong>
+            </div>
+          </div>
+
+          <div class="share-preview">
+            <span class="eyebrow">YOUR JOURNEY</span>
+            <div id="emojiSummary"
+                 class="emoji-summary"
+                 aria-label="Round results"></div>
+          </div>
+
+          <button id="shareButton"
+                  class="secondary-button full-width"
+                  type="button">SHARE RESULT ↗</button>
+          <p id="shareFeedback"
+             class="feedback"
+             role="status"
+             aria-live="polite"></p>
+          <button id="playAgainButton"
+                  class="primary-button full-width"
+                  type="button">PLAY AGAIN ↗</button>
+          <button id="menuButton"
+                  class="text-button centered"
+                  type="button">Back to menu</button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>CHALLENGERS © 2026</span>
+      <span>KNOW MORE. GUESS LESS.</span>
+    </footer>
+  </div>
+
+  <!-- HOW TO PLAY MODAL -->
+  <dialog id="howToPlayModal"
+          class="help-modal"
+          aria-labelledby="helpTitle">
+    <div class="modal-header">
+      <span class="eyebrow">THE RULEBOOK</span>
+      <button id="closeModalButton"
+              class="icon-button"
+              type="button"
+              aria-label="Close instructions">✕</button>
+    </div>
+    <h2 id="helpTitle">How to Play</h2>
+    <p>Each round has one hidden answer.
+       Use the theme and clues to solve it
+       in five tries or fewer.</p>
+
+    <ol class="rules-list">
+      <li><strong>Start:</strong> See the theme,
+          a cryptic clue, and the answer length.</li>
+      <li><strong>Wrong guess 1:</strong>
+          Unlock Clue 2.</li>
+      <li><strong>Wrong guess 2:</strong>
+          Unlock Clue 3.</li>
+      <li><strong>Wrong guess 3:</strong>
+          Reveal the first letter.</li>
+      <li><strong>Wrong guess 4:</strong>
+          Reveal another letter.</li>
+      <li><strong>Try 5:</strong>
+          Your final chance to solve.</li>
+    </ol>
+
+    <div class="score-reference">
+      <span class="eyebrow">BASE POINTS</span>
+      <p>Try 1: 100 · Try 2: 75 · Try 3: 50</p>
+      <p>Try 4: 25 · Try 5: 10 · Failed: 0</p>
+      <p>Consecutive solves earn a multiplier
+         up to +50%.</p>
+    </div>
+
+    <p class="muted">
+      Punctuation, capitalization, and a leading
+      "the" don't matter. Some words also accept
+      alternative names.
+    </p>
+    <button id="gotItButton"
+            class="primary-button full-width"
+            type="button">GOT IT ↗</button>
+  </dialog>
+
+  <div id="confettiLayer"
+       class="confetti-layer"
+       aria-hidden="true"></div>
+</body>
+</html>
